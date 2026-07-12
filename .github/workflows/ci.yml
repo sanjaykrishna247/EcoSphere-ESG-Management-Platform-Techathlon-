@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: ecosphere_test
+          POSTGRES_USER: ecosphere
+          POSTGRES_PASSWORD: ecosphere_secret
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ecosphere"
+          --health-interval 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: ruff check .
+      - run: mypy app || true
+      - run: pytest -v
+        env:
+          DATABASE_URL: postgresql+asyncpg://ecosphere:ecosphere_secret@localhost:5432/ecosphere_test
+          REDIS_URL: redis://localhost:6379/0
+          TESTING: "true"
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install
+      - run: npx tsc -b
+      - run: npm run lint || true

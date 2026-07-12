@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* Force light theme everywhere: dark: utilities only apply under an explicit
+   .dark ancestor class, which this app never sets, instead of Tailwind's
+   default prefers-color-scheme media query that would otherwise flip the UI
+   based on the visitor's OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-eco-green: #22c55e;
+  --color-earth-teal: #0d9488;
+  --color-sky-blue: #0ea5e9;
+  --color-governance-purple: #8b5cf6;
+  --color-amber-warning: #f59e0b;
+  --color-critical-red: #ef4444;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--font-body);
+  @apply bg-neutral-50 text-neutral-900;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-300 dark:bg-neutral-700 rounded-full;
+}
