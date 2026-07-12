@@ -1,17 +1,7 @@
-<svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EcoSphere ESG Management logo">
-  <defs>
-    <style>
-      .wordmark { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-weight: 700; }
-    </style>
-  </defs>
-
-  <!-- ===== Mark: two offset circles, evenodd fill = an open, splitting sphere ===== -->
-  <g transform="translate(20,20)">
-    <path fill-rule="evenodd" fill="#1C9A5B"
-      d="M12,88 A52,52 0 1,0 116,88 A52,52 0 1,0 12,88 Z
-         M44,72 A52,52 0 1,0 148,72 A52,52 0 1,0 44,72 Z"/>
-  </g>
-
-  <!-- ===== Wordmark ===== -->
-  
+<svg viewBox="20 20 160 140" xmlns="http://www.w3.org/2000/svg">
+  <path
+    fill="#1C9A5B"
+    fill-rule="evenodd"
+    d="M12,88 A52,52 0 1,0 116,88 A52,52 0 1,0 12,88 Z
+       M44,72 A52,52 0 1,0 148,72 A52,52 0 1,0 44,72 Z"/>
 </svg>
