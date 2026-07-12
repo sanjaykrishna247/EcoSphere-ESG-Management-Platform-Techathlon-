@@ -43,12 +43,33 @@ export function Topbar() {
         </button>
 
         <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-neutral-200 dark:border-neutral-800">
-          <div className="w-8 h-8 rounded-full bg-eco-green/15 text-eco-green flex items-center justify-center font-semibold text-sm shrink-0">
-            {user?.full_name?.[0]?.toUpperCase() ?? "?"}
+          <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 p-1 border border-neutral-200 dark:border-neutral-700">
+            <img src="/favicon.svg" alt="Avatar" className="w-full h-full object-contain" />
           </div>
           <div className="text-sm leading-tight">
             <p className="font-medium leading-tight">{user?.full_name}</p>
-            <p className="text-xs text-neutral-500 leading-tight capitalize">{user?.role}</p>
+            <select
+              className="text-[11px] text-neutral-500 bg-transparent border-none p-0 focus:ring-0 cursor-pointer capitalize font-normal outline-none focus:outline-none"
+              value={user?.role ?? "admin"}
+              onChange={(e) => {
+                if (user) {
+                  const newRole = e.target.value as "admin" | "manager" | "employee";
+                  useAuthStore.getState().setUser({
+                    ...user,
+                    role: newRole,
+                    full_name: newRole === "admin" 
+                      ? "EcoSphere Admin" 
+                      : newRole === "manager" 
+                      ? "EcoSphere Manager" 
+                      : "EcoSphere Employee"
+                  });
+                }
+              }}
+            >
+              <option value="admin">Admin</option>
+              <option value="manager">Manager</option>
+              <option value="employee">Employee</option>
+            </select>
           </div>
         </div>
 

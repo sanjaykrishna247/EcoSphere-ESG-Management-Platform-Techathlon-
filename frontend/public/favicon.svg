@@ -1,0 +1,20 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EcoSphere favicon">
+  <!-- ===== Mark: three interlocking orbit bands forming a sphere ===== -->
+  <g transform="translate(100,100)">
+    <!-- soft ground shadow -->
+    <ellipse cx="0" cy="78" rx="58" ry="8" fill="#1B2420" opacity="0.08"/>
+
+    <!-- orbit band: Governance -->
+    <ellipse cx="0" cy="0" rx="80" ry="33" fill="none" stroke="#3B5B74" stroke-width="7"
+             transform="rotate(120)"/>
+    <!-- orbit band: Social -->
+    <ellipse cx="0" cy="0" rx="80" ry="33" fill="none" stroke="#C79A45" stroke-width="7"
+             transform="rotate(60)"/>
+    <!-- orbit band: Environmental -->
+    <ellipse cx="0" cy="0" rx="80" ry="33" fill="none" stroke="#2F5D50" stroke-width="7"
+             transform="rotate(0)"/>
+
+    <!-- core -->
+    <circle cx="0" cy="0" r="10" fill="#1B2420"/>
+  </g>
+</svg>

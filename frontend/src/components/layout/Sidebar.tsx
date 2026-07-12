@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { clsx } from "@/utils/clsx";
 import { useUiStore } from "@/store/uiStore";
 import {
-  Globe,
   LayoutDashboard,
   Leaf,
   Users,
@@ -102,12 +101,8 @@ export function Sidebar() {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="px-5 py-5 flex items-center gap-2.5 border-b border-neutral-100">
-          <Globe className="w-6 h-6 text-eco-green shrink-0" />
-          <div>
-            <p className="font-display font-bold text-lg leading-tight tracking-tight">EcoSphere</p>
-            <p className="text-[11px] text-neutral-400 leading-tight">ESG Management</p>
-          </div>
+        <div className="px-5 py-4 border-b border-neutral-100 flex items-center">
+          <img src="/ecosphere-logo.svg" alt="EcoSphere Logo" className="h-14 w-auto" />
         </div>
 
         <nav className="flex-1 px-3 py-3 overflow-y-auto">

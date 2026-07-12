@@ -1,0 +1,34 @@
+<svg viewBox="0 0 680 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EcoSphere ESG Management logo">
+  <defs>
+    <style>
+      .wordmark-eco { font-family: Futura, "Century Gothic", "Avenir Next", "Segoe UI", sans-serif; font-weight: 700; }
+      .wordmark-sphere { font-family: Futura, "Century Gothic", "Avenir Next", "Segoe UI", sans-serif; font-weight: 400; }
+      .tagline { font-family: "Segoe UI", "Avenir Next", sans-serif; font-weight: 600; letter-spacing: 6px; }
+    </style>
+  </defs>
+
+  <!-- ===== Mark: three interlocking orbit bands forming a sphere ===== -->
+  <g transform="translate(100,110)">
+    <!-- soft ground shadow -->
+    <ellipse cx="0" cy="78" rx="58" ry="8" fill="#1B2420" opacity="0.08"/>
+
+    <!-- orbit band: Governance -->
+    <ellipse cx="0" cy="0" rx="80" ry="33" fill="none" stroke="#3B5B74" stroke-width="7"
+             transform="rotate(120)"/>
+    <!-- orbit band: Social -->
+    <ellipse cx="0" cy="0" rx="80" ry="33" fill="none" stroke="#C79A45" stroke-width="7"
+             transform="rotate(60)"/>
+    <!-- orbit band: Environmental -->
+    <ellipse cx="0" cy="0" rx="80" ry="33" fill="none" stroke="#2F5D50" stroke-width="7"
+             transform="rotate(0)"/>
+
+    <!-- core -->
+    <circle cx="0" cy="0" r="10" fill="#1B2420"/>
+  </g>
+
+  <!-- ===== Wordmark ===== -->
+  <g transform="translate(232,0)">
+    <text x="0" y="118" font-size="54" class="wordmark-eco" fill="#1B2420">Eco<tspan class="wordmark-sphere" fill="#2F5D50">Sphere</tspan></text>
+    <text x="3" y="152" font-size="15" class="tagline" fill="#C79A45">ESG MANAGEMENT</text>
+  </g>
+</svg>
