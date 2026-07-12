@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/api/client";
 import type { SuccessResponse } from "@/types/api";
 
@@ -12,6 +12,13 @@ export interface Category {
   created_at: string;
 }
 
+export interface CategoryCreate {
+  name: string;
+  type: CategoryType;
+}
+
+export type CategoryUpdate = Partial<CategoryCreate & { status: "active" | "inactive" }>;
+
 export function useCategories(type?: CategoryType) {
   return useQuery({
     queryKey: ["categories", type ?? "all"],
@@ -20,6 +27,47 @@ export function useCategories(type?: CategoryType) {
         params: type ? { type } : undefined,
       });
       return res.data.data;
+    },
+  });
+}
+
+export function useCreateCategory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CategoryCreate) => {
+      const res = await api.post<SuccessResponse<Category>>("/categories", data);
+      return res.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
+}
+
+export function useUpdateCategory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: CategoryUpdate }) => {
+      const res = await api.patch<SuccessResponse<Category>>(
+        `/categories/${id}`,
+        data
+      );
+      return res.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    },
+  });
+}
+
+export function useDeleteCategory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/categories/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 }

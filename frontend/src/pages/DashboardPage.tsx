@@ -3,33 +3,24 @@ import { ScoreRing } from "@/components/charts/ScoreRing";
 import { Card } from "@/components/ui/Card";
 import { useOrgOverview, useEnvironmentalDashboard, useAverageDepartmentScores } from "@/api/dashboard";
 import { Wind, Trophy, Users, AlertTriangle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const kpiIconBg: Record<"green" | "teal" | "blue" | "purple", string> = {
-  green: "bg-eco-green/10 text-eco-green",
-  teal: "bg-earth-teal/10 text-earth-teal",
-  blue: "bg-sky-blue/10 text-sky-blue",
-  purple: "bg-governance-purple/10 text-governance-purple",
-};
-
-function KpiCard({
-  label,
-  value,
-  icon,
-  accent,
-}: {
+interface KpiCardProps {
   label: string;
   value: string | number;
-  icon: React.ReactNode;
-  accent: "green" | "teal" | "blue" | "purple";
-}) {
+  Icon: LucideIcon;
+  color: string;
+}
+
+function KpiCard({ label, value, Icon, color }: KpiCardProps) {
   return (
-    <Card accent={accent} className="flex items-start gap-3">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${kpiIconBg[accent]}`}>
-        {icon}
+    <Card className="flex items-center gap-4">
+      <div className={`p-2.5 rounded-md ${color}`}>
+        <Icon className="w-5 h-5" />
       </div>
-      <div className="min-w-0">
-        <p className="text-xs uppercase tracking-wide text-neutral-400 font-medium truncate">{label}</p>
-        <p className="text-xl sm:text-2xl font-display font-bold mt-0.5">{value}</p>
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-neutral-400">{label}</p>
+        <p className="text-2xl font-semibold text-neutral-900 mt-0.5">{value}</p>
       </div>
     </Card>
   );
@@ -43,12 +34,13 @@ export function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-display font-bold tracking-tight">Organization Overview</h1>
-        <p className="text-sm text-neutral-500 mt-0.5">A live snapshot of your ESG performance.</p>
+        <h1 className="text-[22px] font-semibold tracking-tight text-neutral-900">Organization Overview</h1>
+        <p className="text-sm text-neutral-500 mt-0.5">Live snapshot of your ESG performance.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <Card className="lg:col-span-1 flex items-center justify-center py-8">
+      {/* Top row: score ring + KPIs */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <Card className="lg:col-span-1 flex items-center justify-center py-6">
           <ScoreRing
             environmental={scores?.environmental ?? 0}
             social={scores?.social ?? 0}
@@ -59,36 +51,42 @@ export function DashboardPage() {
         <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <KpiCard
             label="Total CO2 (YTD)"
-            value={overviewLoading ? "…" : `${(overview?.total_co2_ytd ?? 0).toFixed(1)} kg`}
-            icon={<Wind className="w-5 h-5 text-earth-teal" />}
-            accent="teal"
+            value={overviewLoading ? "—" : `${(overview?.total_co2_ytd ?? 0).toFixed(1)} kg`}
+            Icon={Wind}
+            color="text-env bg-env-muted"
           />
           <KpiCard
             label="Active Challenges"
             value={overview?.active_challenges ?? 0}
-            icon={<Trophy className="w-5 h-5 text-governance-purple" />}
-            accent="purple"
+            Icon={Trophy}
+            color="text-gov bg-gov-muted"
           />
           <KpiCard
             label="CSR Participants"
             value={overview?.csr_participants ?? 0}
-            icon={<Users className="w-5 h-5 text-sky-blue" />}
-            accent="blue"
+            Icon={Users}
+            color="text-social bg-social-muted"
           />
           <KpiCard
             label="Open Issues"
             value={overview?.open_compliance_issues ?? 0}
-            icon={<AlertTriangle className="w-5 h-5 text-eco-green" />}
-            accent="green"
+            Icon={AlertTriangle}
+            color="text-warn bg-warn-muted"
           />
         </div>
       </div>
 
+      {/* Monthly carbon chart */}
       <Card>
-        <h2 className="font-display font-semibold mb-4">Monthly Carbon Trend</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-neutral-500 mb-4">
+          Monthly Carbon Emissions
+        </h2>
         <TrendAreaChart
           data={(envStats?.monthly_co2_trend ?? []).map((p) => ({
-            label: new Date(p.month).toLocaleDateString(undefined, { month: "short", year: "numeric" }),
+            label: new Date(p.month).toLocaleDateString(undefined, {
+              month: "short",
+              year: "numeric",
+            }),
             value: p.co2_equivalent,
           }))}
           color="#0d9488"

@@ -2,7 +2,11 @@ import { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { clsx } from "@/utils/clsx";
+import { Badge, type BadgeVariant } from "@/components/ui/Badge";
+import { Table, type Column } from "@/components/ui/Table";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Scale, Plus, X } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import {
   usePolicies,
@@ -13,25 +17,11 @@ import {
   type PolicyCategory,
 } from "@/api/policies";
 
-const categoryAccent: Record<PolicyCategory, "teal" | "blue" | "purple"> = {
+const categoryVariant: Record<PolicyCategory, BadgeVariant> = {
   environmental: "teal",
-  social: "blue",
-  governance: "purple",
+  social:        "info",
+  governance:    "purple",
 };
-
-const categoryBadgeClasses: Record<PolicyCategory, string> = {
-  environmental: "bg-earth-teal/10 text-earth-teal",
-  social: "bg-sky-blue/10 text-sky-blue",
-  governance: "bg-governance-purple/10 text-governance-purple",
-};
-
-function CategoryBadge({ category }: { category: PolicyCategory }) {
-  return (
-    <span className={clsx("text-xs font-medium px-2 py-0.5 rounded-full capitalize", categoryBadgeClasses[category])}>
-      {category}
-    </span>
-  );
-}
 
 interface CreatePolicyForm {
   title: string;
@@ -71,9 +61,14 @@ function CreatePolicyFormPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <Card>
-      <h2 className="font-display font-semibold mb-4">Create Policy</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <Card className="mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-semibold">Create Policy</h2>
+        <button onClick={onClose} className="text-neutral-400 hover:text-neutral-700">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
           label="Title"
           value={form.title}
@@ -81,18 +76,9 @@ function CreatePolicyFormPanel({ onClose }: { onClose: () => void }) {
           required
         />
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Content</label>
-          <textarea
-            className="rounded-xl border px-3 py-2 text-sm bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-eco-green min-h-[140px]"
-            value={form.content}
-            onChange={(e) => setForm({ ...form, content: e.target.value })}
-            required
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Category</label>
+          <label className="text-xs font-medium text-neutral-600 uppercase tracking-wide">Category</label>
           <select
-            className="rounded-xl border px-3 py-2 text-sm bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-eco-green"
+            className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
             value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value as PolicyCategory })}
           >
@@ -114,24 +100,35 @@ function CreatePolicyFormPanel({ onClose }: { onClose: () => void }) {
           value={form.expiry_date}
           onChange={(e) => setForm({ ...form, expiry_date: e.target.value })}
         />
-        <label className="flex items-center gap-2 text-sm">
+        <div className="sm:col-span-2 flex flex-col gap-1">
+          <label className="text-xs font-medium text-neutral-600 uppercase tracking-wide">Content</label>
+          <textarea
+            className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 min-h-[120px]"
+            value={form.content}
+            onChange={(e) => setForm({ ...form, content: e.target.value })}
+            required
+          />
+        </div>
+        <div className="sm:col-span-2 flex items-center gap-3">
           <input
             type="checkbox"
+            id="ack-required"
             checked={form.acknowledgement_required}
             onChange={(e) => setForm({ ...form, acknowledgement_required: e.target.checked })}
+            className="rounded border-neutral-300"
           />
-          Acknowledgement required
-        </label>
+          <label htmlFor="ack-required" className="text-sm text-neutral-700">
+            Acknowledgement required from employees
+          </label>
+        </div>
         {createPolicy.isError && (
-          <p className="text-xs text-critical-red">Failed to create policy. Please check the fields.</p>
+          <p className="sm:col-span-2 text-xs text-danger">Failed to create policy. Please check all fields.</p>
         )}
-        <div className="flex gap-2 mt-2">
+        <div className="sm:col-span-2 flex gap-2">
           <Button type="submit" disabled={createPolicy.isPending}>
             {createPolicy.isPending ? "Saving…" : "Save Policy"}
           </Button>
-          <Button type="button" variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
+          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
         </div>
       </form>
     </Card>
@@ -145,37 +142,37 @@ function PolicyDetailDrawer({ policy, onClose }: { policy: EsgPolicy; onClose: (
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-xl h-full bg-white dark:bg-neutral-900 shadow-2xl p-6 overflow-y-auto flex flex-col gap-4">
+      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <div className="relative w-full max-w-lg h-full bg-white shadow-xl p-6 overflow-y-auto flex flex-col gap-4">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-display font-bold">{policy.title}</h2>
-            <div className="flex items-center gap-2 mt-2">
-              <CategoryBadge category={policy.category} />
-              <span className="text-xs text-neutral-500">v{policy.version}</span>
-            </div>
+            <Badge variant={categoryVariant[policy.category]} className="mb-2">{policy.category}</Badge>
+            <h2 className="text-lg font-semibold text-neutral-900">{policy.title}</h2>
+            <p className="text-xs text-neutral-400 mt-1">Version {policy.version}</p>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            Close
-          </Button>
+          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-700 shrink-0 ml-4">
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <div className="text-sm text-neutral-500 flex flex-col gap-1">
-          <span>Effective: {policy.effective_date}</span>
-          {policy.expiry_date && <span>Expires: {policy.expiry_date}</span>}
+        <div className="flex gap-4 text-xs text-neutral-500 border-y border-neutral-100 py-3">
+          <span>Effective: <strong className="text-neutral-700">{policy.effective_date}</strong></span>
+          {policy.expiry_date && (
+            <span>Expires: <strong className="text-neutral-700">{policy.expiry_date}</strong></span>
+          )}
         </div>
 
-        <div className="rounded-xl bg-neutral-50 dark:bg-neutral-800 p-4 flex-1 overflow-y-auto">
-          <div className="whitespace-pre-wrap text-sm">{policy.content}</div>
+        <div className="flex-1 rounded-md bg-neutral-50 border border-neutral-200 p-4 text-sm text-neutral-700 whitespace-pre-wrap overflow-y-auto">
+          {policy.content}
         </div>
 
         {policy.acknowledgement_required && (
-          <div>
+          <div className="pt-2">
             {alreadyAcknowledged ? (
-              <span className="text-sm text-eco-green font-medium">You have acknowledged this policy.</span>
+              <p className="text-sm font-medium text-brand">Acknowledged</p>
             ) : (
               <Button onClick={() => acknowledge.mutate(policy.id)} disabled={acknowledge.isPending}>
-                {acknowledge.isPending ? "Acknowledging…" : "Acknowledge"}
+                {acknowledge.isPending ? "Acknowledging…" : "Acknowledge Policy"}
               </Button>
             )}
           </div>
@@ -191,44 +188,88 @@ export function PoliciesPage() {
   const [selected, setSelected] = useState<EsgPolicy | null>(null);
   const [showCreate, setShowCreate] = useState(false);
 
+  const columns: Column<EsgPolicy>[] = [
+    {
+      key: "title",
+      header: "Title",
+      render: (row) => <span className="font-medium text-neutral-900">{row.title}</span>,
+    },
+    {
+      key: "category",
+      header: "Category",
+      render: (row) => (
+        <Badge variant={categoryVariant[row.category]}>{row.category}</Badge>
+      ),
+    },
+    {
+      key: "version",
+      header: "Version",
+      render: (row) => <span className="text-xs text-neutral-400">v{row.version}</span>,
+    },
+    {
+      key: "effective_date",
+      header: "Effective",
+      render: (row) => <span className="text-sm text-neutral-600">{row.effective_date}</span>,
+    },
+    {
+      key: "acknowledgement_required",
+      header: "Ack Required",
+      render: (row) =>
+        row.acknowledgement_required ? (
+          <Badge variant="warning">Required</Badge>
+        ) : (
+          <span className="text-neutral-300 text-xs">—</span>
+        ),
+    },
+    {
+      key: "is_active",
+      header: "Status",
+      render: (row) => (
+        <Badge variant={row.is_active ? "success" : "neutral"}>
+          {row.is_active ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-display font-bold">ESG Policies</h1>
-        {user?.role === "admin" && (
-          <Button onClick={() => setShowCreate((v) => !v)}>{showCreate ? "Close Form" : "Create Policy"}</Button>
-        )}
-      </div>
+    <div>
+      <PageHeader
+        title="ESG Policies"
+        subtitle="Manage and acknowledge organizational policies across Environmental, Social, and Governance areas."
+        action={
+          user?.role === "admin" ? (
+            <Button onClick={() => setShowCreate((v) => !v)}>
+              <Plus className="w-4 h-4" />
+              {showCreate ? "Cancel" : "Create Policy"}
+            </Button>
+          ) : undefined
+        }
+      />
 
       {showCreate && <CreatePolicyFormPanel onClose={() => setShowCreate(false)} />}
 
-      {isLoading && <p className="text-sm text-neutral-500">Loading...</p>}
-      {!isLoading && (policies?.length ?? 0) === 0 && (
-        <p className="text-sm text-neutral-500">Nothing here yet</p>
+      <Card variant="table">
+        {!isLoading && (policies?.length ?? 0) === 0 ? (
+          <EmptyState
+            icon={<Scale className="w-10 h-10" />}
+            title="No policies yet"
+            description="Create the first policy to get started."
+          />
+        ) : (
+          <Table
+            columns={columns}
+            data={policies ?? []}
+            keyExtractor={(row) => row.id}
+            loading={isLoading}
+            onRowClick={setSelected}
+          />
+        )}
+      </Card>
+
+      {selected && (
+        <PolicyDetailDrawer policy={selected} onClose={() => setSelected(null)} />
       )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {policies?.map((policy) => (
-          <Card
-            key={policy.id}
-            accent={categoryAccent[policy.category]}
-            className="cursor-pointer hover:shadow-xl transition-shadow"
-            onClick={() => setSelected(policy)}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <CategoryBadge category={policy.category} />
-              <span className="text-xs text-neutral-400">v{policy.version}</span>
-            </div>
-            <h3 className="font-semibold">{policy.title}</h3>
-            <p className="text-xs text-neutral-500 mt-2">Effective {policy.effective_date}</p>
-            {policy.acknowledgement_required && (
-              <span className="text-xs text-amber-warning font-medium">Acknowledgement required</span>
-            )}
-          </Card>
-        ))}
-      </div>
-
-      {selected && <PolicyDetailDrawer policy={selected} onClose={() => setSelected(null)} />}
     </div>
   );
 }

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/Card";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { clsx } from "@/utils/clsx";
+import { Trophy } from "lucide-react";
 import {
   useUserLeaderboard,
   useDepartmentLeaderboard,
@@ -9,16 +12,12 @@ import {
 } from "@/api/leaderboards";
 
 const PERIOD_TABS: { value: LeaderboardPeriod; label: string }[] = [
-  { value: "week", label: "This Week" },
+  { value: "week",  label: "This Week" },
   { value: "month", label: "This Month" },
-  { value: "all", label: "All Time" },
+  { value: "all",   label: "All Time" },
 ];
 
-const PODIUM_STYLES: Record<number, string> = {
-  1: "order-2 h-40 bg-amber-50/50 dark:bg-amber-950/10 border-amber-400",
-  2: "order-1 h-28 bg-neutral-50 dark:bg-neutral-800/40 border-neutral-300 dark:border-neutral-700",
-  3: "order-3 h-20 bg-orange-50/30 dark:bg-orange-950/10 border-orange-300",
-};
+const RANK_LABEL: Record<number, string> = { 1: "1st", 2: "2nd", 3: "3rd" };
 
 function initials(name: string): string {
   return name
@@ -29,55 +28,42 @@ function initials(name: string): string {
     .join("");
 }
 
-function Podium({ entries }: { entries: LeaderboardEntry[] }) {
-  const top3 = entries.slice(0, 3);
-  if (top3.length === 0) return null;
-
+function RankRow({ entry, maxXp }: { entry: LeaderboardEntry; maxXp: number }) {
+  const isTop3 = entry.rank <= 3;
   return (
-    <div className="flex items-end justify-center gap-4 mb-6">
-      {top3.map((entry) => (
+    <div
+      className={clsx(
+        "flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0",
+        isTop3 && "bg-neutral-50"
+      )}
+    >
+      <span
+        className={clsx(
+          "w-8 text-sm font-bold shrink-0",
+          entry.rank === 1
+            ? "text-amber-500"
+            : entry.rank === 2
+            ? "text-neutral-400"
+            : entry.rank === 3
+            ? "text-orange-400"
+            : "text-neutral-400 font-medium"
+        )}
+      >
+        {RANK_LABEL[entry.rank] ?? `#${entry.rank}`}
+      </span>
+      <div className="w-8 h-8 rounded-full bg-brand-muted border border-brand/20 flex items-center justify-center font-semibold text-xs text-brand shrink-0">
+        {initials(entry.full_name)}
+      </div>
+      <span className="flex-1 text-sm font-medium text-neutral-900 truncate">{entry.full_name}</span>
+      <div className="w-28 h-1.5 bg-neutral-200 rounded-full overflow-hidden hidden sm:block shrink-0">
         <div
-          key={entry.user_id}
-          className={clsx(
-            "flex flex-col items-center justify-end gap-2 rounded-xl border-2 px-4 pb-3 pt-4 w-32",
-            PODIUM_STYLES[entry.rank] ?? "order-4 h-16 border-neutral-300"
-          )}
-        >
-          <div className="w-12 h-12 rounded-full bg-eco-green text-white flex items-center justify-center font-bold text-sm">
-            {initials(entry.full_name)}
-          </div>
-          <p className="text-xs font-semibold text-center truncate w-full">{entry.full_name}</p>
-          <p className="text-xs text-neutral-500">{entry.xp} XP</p>
-          <span className="text-lg font-display font-bold">#{entry.rank}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function RankedList({ entries }: { entries: LeaderboardEntry[] }) {
-  const rest = entries.slice(3);
-  if (rest.length === 0) return null;
-  const maxXp = Math.max(...entries.map((e) => e.xp), 1);
-
-  return (
-    <div className="flex flex-col gap-2">
-      {rest.map((entry) => (
-        <div key={entry.user_id} className="flex items-center gap-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 px-3 py-2">
-          <span className="w-8 text-sm font-semibold text-neutral-500">#{entry.rank}</span>
-          <div className="w-8 h-8 rounded-full bg-earth-teal text-white flex items-center justify-center font-semibold text-xs shrink-0">
-            {initials(entry.full_name)}
-          </div>
-          <span className="flex-1 text-sm truncate">{entry.full_name}</span>
-          <div className="w-24 h-2 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden hidden sm:block">
-            <div
-              className="h-full bg-eco-green rounded-full"
-              style={{ width: `${Math.min(100, (entry.xp / maxXp) * 100)}%` }}
-            />
-          </div>
-          <span className="text-sm font-semibold w-16 text-right">{entry.xp} XP</span>
-        </div>
-      ))}
+          className="h-full bg-brand rounded-full"
+          style={{ width: `${Math.min(100, (entry.xp / maxXp) * 100)}%` }}
+        />
+      </div>
+      <span className="text-sm font-semibold text-neutral-900 w-16 text-right shrink-0">
+        {entry.xp} XP
+      </span>
     </div>
   );
 }
@@ -85,26 +71,40 @@ function RankedList({ entries }: { entries: LeaderboardEntry[] }) {
 function DepartmentLeaderboard() {
   const { data, isLoading } = useDepartmentLeaderboard();
 
-  if (isLoading) return <p className="text-sm text-neutral-500">Loading...</p>;
-  if (!data || data.length === 0) return <p className="text-sm text-neutral-500">Nothing here yet</p>;
+  if (isLoading) return <p className="p-4 text-sm text-neutral-400">Loading…</p>;
+  if (!data || data.length === 0) {
+    return (
+      <EmptyState
+        icon={<Trophy className="w-10 h-10" />}
+        title="No department scores yet"
+        description="Department scores are calculated from individual ESG activities."
+      />
+    );
+  }
 
   const maxScore = Math.max(...data.map((d) => d.score), 1);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div>
       {data.map((dept) => (
-        <div key={dept.department_id} className="flex items-center gap-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 px-3 py-2">
-          <span className="w-8 text-sm font-semibold text-neutral-500">#{dept.rank}</span>
-          <span className="flex-1 text-sm font-medium truncate">
-            {dept.name} <span className="text-neutral-400 font-normal">({dept.code})</span>
+        <div
+          key={dept.department_id}
+          className="flex items-center gap-3 px-4 py-3 border-b border-neutral-100 last:border-0"
+        >
+          <span className="w-8 text-sm font-bold text-neutral-400 shrink-0">#{dept.rank}</span>
+          <span className="flex-1 text-sm font-medium text-neutral-900 truncate">
+            {dept.name}{" "}
+            <span className="text-neutral-400 font-normal text-xs">({dept.code})</span>
           </span>
-          <div className="w-24 h-2 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden hidden sm:block">
+          <div className="w-28 h-1.5 bg-neutral-200 rounded-full overflow-hidden hidden sm:block shrink-0">
             <div
-              className="h-full bg-earth-teal rounded-full"
+              className="h-full bg-env rounded-full"
               style={{ width: `${Math.min(100, (dept.score / maxScore) * 100)}%` }}
             />
           </div>
-          <span className="text-sm font-semibold w-20 text-right">{dept.score.toFixed(1)}</span>
+          <span className="text-sm font-semibold text-neutral-900 w-20 text-right shrink-0">
+            {dept.score.toFixed(1)}
+          </span>
         </div>
       ))}
     </div>
@@ -116,65 +116,76 @@ export function LeaderboardPage() {
   const [showDepartments, setShowDepartments] = useState(false);
   const { data, isLoading } = useUserLeaderboard(period);
 
+  const maxXp = Math.max(...(data?.map((e) => e.xp) ?? []), 1);
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-display font-bold">Leaderboard</h1>
-        <div className="flex gap-2">
-          <button
-            className={clsx(
-              "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
-              !showDepartments ? "bg-eco-green text-white" : "bg-neutral-200 dark:bg-neutral-800"
-            )}
-            onClick={() => setShowDepartments(false)}
-          >
-            Employees
-          </button>
-          <button
-            className={clsx(
-              "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
-              showDepartments ? "bg-eco-green text-white" : "bg-neutral-200 dark:bg-neutral-800"
-            )}
-            onClick={() => setShowDepartments(true)}
-          >
-            Departments
-          </button>
-        </div>
-      </div>
+    <div>
+      <PageHeader
+        title="Leaderboard"
+        subtitle="Employee and department rankings by ESG activity and XP points."
+        action={
+          <div className="flex border border-neutral-200 rounded-md overflow-hidden">
+            {[
+              { label: "Employees",   active: !showDepartments, onClick: () => setShowDepartments(false) },
+              { label: "Departments", active:  showDepartments, onClick: () => setShowDepartments(true) },
+            ].map((tab) => (
+              <button
+                key={tab.label}
+                type="button"
+                onClick={tab.onClick}
+                className={clsx(
+                  "px-4 py-1.5 text-sm font-medium transition-colors",
+                  tab.active
+                    ? "bg-neutral-900 text-white"
+                    : "bg-white text-neutral-600 hover:bg-neutral-50"
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        }
+      />
 
       {!showDepartments && (
         <>
-          <div className="flex gap-2">
+          <div className="flex gap-2 mb-4">
             {PERIOD_TABS.map((tab) => (
               <button
                 key={tab.value}
-                className={clsx(
-                  "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
-                  period === tab.value ? "bg-governance-purple text-white" : "bg-neutral-200 dark:bg-neutral-800"
-                )}
+                type="button"
                 onClick={() => setPeriod(tab.value)}
+                className={clsx(
+                  "px-3 py-1.5 rounded-md text-sm font-medium border transition-colors",
+                  period === tab.value
+                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
+                )}
               >
                 {tab.label}
               </button>
             ))}
           </div>
 
-          <Card>
-            {isLoading && <p className="text-sm text-neutral-500">Loading...</p>}
-            {!isLoading && (data?.length ?? 0) === 0 && <p className="text-sm text-neutral-500">Nothing here yet</p>}
-            {!isLoading && data && data.length > 0 && (
-              <>
-                <Podium entries={data} />
-                <RankedList entries={data} />
-              </>
+          <Card variant="table">
+            {isLoading && <p className="p-4 text-sm text-neutral-400">Loading…</p>}
+            {!isLoading && (data?.length ?? 0) === 0 && (
+              <EmptyState
+                icon={<Trophy className="w-10 h-10" />}
+                title="No entries yet"
+                description="Complete challenges to earn XP and appear on the leaderboard."
+              />
             )}
+            {!isLoading &&
+              data?.map((entry) => (
+                <RankRow key={entry.user_id} entry={entry} maxXp={maxXp} />
+              ))}
           </Card>
         </>
       )}
 
       {showDepartments && (
-        <Card>
-          <h2 className="font-display font-semibold mb-4">Department Rankings</h2>
+        <Card variant="table">
           <DepartmentLeaderboard />
         </Card>
       )}

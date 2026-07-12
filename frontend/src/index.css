@@ -1,22 +1,34 @@
 @import "tailwindcss";
 
-/* Force light theme everywhere: dark: utilities only apply under an explicit
-   .dark ancestor class, which this app never sets, instead of Tailwind's
-   default prefers-color-scheme media query that would otherwise flip the UI
-   based on the visitor's OS setting. */
+/* Force light theme: dark: utilities only apply under an explicit .dark class */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-body:    "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
 
-  --color-eco-green: #22c55e;
-  --color-earth-teal: #0d9488;
-  --color-sky-blue: #0ea5e9;
-  --color-governance-purple: #8b5cf6;
-  --color-amber-warning: #f59e0b;
-  --color-critical-red: #ef4444;
+  /* Brand / module colors */
+  --color-brand:        #16a34a;   /* green-600  – primary actions */
+  --color-brand-muted:  #f0fdf4;   /* green-50   – active row tint */
+  --color-env:          #0d9488;   /* teal-600   – environmental */
+  --color-env-muted:    #f0fdfa;   /* teal-50    */
+  --color-social:       #2563eb;   /* blue-600   – social */
+  --color-social-muted: #eff6ff;   /* blue-50    */
+  --color-gov:          #7c3aed;   /* violet-600 – governance */
+  --color-gov-muted:    #f5f3ff;   /* violet-50  */
+  --color-warn:         #d97706;   /* amber-600  */
+  --color-warn-muted:   #fffbeb;   /* amber-50   */
+  --color-danger:       #dc2626;   /* red-600    */
+  --color-danger-muted: #fef2f2;   /* red-50     */
+
+  /* Legacy aliases kept for pages that haven't been migrated */
+  --color-eco-green:          #16a34a;
+  --color-earth-teal:         #0d9488;
+  --color-sky-blue:           #2563eb;
+  --color-governance-purple:  #7c3aed;
+  --color-amber-warning:      #d97706;
+  --color-critical-red:       #dc2626;
 }
 
 :root {
@@ -25,14 +37,28 @@
 
 body {
   font-family: var(--font-body);
-  @apply bg-neutral-50 text-neutral-900;
+  @apply bg-gray-50 text-neutral-900 antialiased;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { @apply bg-transparent; }
+::-webkit-scrollbar-thumb { @apply bg-neutral-300 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-neutral-400; }
+
+/* ── Focus ring ──────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid theme(colors.brand);
+  outline-offset: 2px;
 }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-neutral-300 dark:bg-neutral-700 rounded-full;
+/* ── Typography helpers ──────────────────────────── */
+.page-title {
+  @apply text-[22px] font-semibold tracking-tight text-neutral-900;
+}
+.section-title {
+  @apply text-base font-semibold text-neutral-800;
+}
+.label-xs {
+  @apply text-[11px] font-medium uppercase tracking-widest text-neutral-400;
 }

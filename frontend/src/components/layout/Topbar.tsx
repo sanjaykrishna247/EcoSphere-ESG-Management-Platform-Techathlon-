@@ -3,8 +3,7 @@ import { useLogout } from "@/api/auth";
 import { useNotificationSocket } from "@/hooks/useNotificationSocket";
 import { useUnreadCount } from "@/api/notifications";
 import { useUiStore } from "@/store/uiStore";
-import { Button } from "@/components/ui/Button";
-import { Bell } from "lucide-react";
+import { Bell, Menu, LogOut } from "lucide-react";
 
 export function Topbar() {
   const user = useAuthStore((s) => s.user);
@@ -14,42 +13,48 @@ export function Topbar() {
   const { data: unreadCount } = useUnreadCount();
 
   return (
-    <header className="h-16 shrink-0 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between gap-3 px-4 sm:px-6 bg-white/80 dark:bg-neutral-900/80 backdrop-blur sticky top-0 z-20">
+    <header className="h-14 shrink-0 border-b border-neutral-200 bg-white flex items-center justify-between gap-3 px-4 sm:px-6 sticky top-0 z-20">
+      {/* Mobile menu toggle */}
       <button
         type="button"
         onClick={toggleSidebar}
-        className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+        className="lg:hidden flex items-center justify-center w-8 h-8 rounded-md text-neutral-500 hover:bg-neutral-100 transition-colors"
         aria-label="Toggle navigation"
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-          <path d="M2.5 5.5h15M2.5 10h15M2.5 14.5h15" />
-        </svg>
+        <Menu className="w-5 h-5" />
       </button>
 
       <div className="flex-1" />
 
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-1">
+        {/* Notification bell */}
         <button
           type="button"
-          className="relative w-9 h-9 flex items-center justify-center rounded-full text-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+          className="relative w-8 h-8 flex items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 transition-colors"
           title="Notifications"
         >
-          <Bell className="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
+          <Bell className="w-4.5 h-4.5" />
           {!!unreadCount && unreadCount > 0 && (
-            <span className="absolute top-1 right-1 bg-critical-red text-white text-[10px] font-semibold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
-              {unreadCount}
+            <span className="absolute top-1 right-1 bg-danger text-white text-[9px] font-bold rounded-full min-w-3.5 h-3.5 px-0.5 flex items-center justify-center leading-none">
+              {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
         </button>
 
-        <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-neutral-200 dark:border-neutral-800">
-          <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0 p-1 border border-neutral-200 dark:border-neutral-700">
-            <img src="/favicon.svg" alt="Avatar" className="w-full h-full object-contain" />
+        {/* Divider */}
+        <div className="w-px h-5 bg-neutral-200 mx-1" />
+
+        {/* User info + role switcher */}
+        <div className="hidden sm:flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-full bg-brand-muted border border-brand/20 flex items-center justify-center shrink-0 overflow-hidden">
+            <img src="/favicon.svg" alt="Avatar" className="w-5 h-5 object-contain" />
           </div>
           <div className="text-sm leading-tight">
-            <p className="font-medium leading-tight">{user?.full_name}</p>
+            <p className="font-medium text-neutral-900 text-[13px] leading-tight">
+              {user?.full_name}
+            </p>
             <select
-              className="text-[11px] text-neutral-500 bg-transparent border-none p-0 focus:ring-0 cursor-pointer capitalize font-normal outline-none focus:outline-none"
+              className="text-[11px] text-neutral-500 bg-transparent border-none p-0 focus:ring-0 cursor-pointer capitalize font-normal outline-none w-full"
               value={user?.role ?? "admin"}
               onChange={(e) => {
                 if (user) {
@@ -57,11 +62,12 @@ export function Topbar() {
                   useAuthStore.getState().setUser({
                     ...user,
                     role: newRole,
-                    full_name: newRole === "admin" 
-                      ? "EcoSphere Admin" 
-                      : newRole === "manager" 
-                      ? "EcoSphere Manager" 
-                      : "EcoSphere Employee"
+                    full_name:
+                      newRole === "admin"
+                        ? "EcoSphere Admin"
+                        : newRole === "manager"
+                        ? "EcoSphere Manager"
+                        : "EcoSphere Employee",
                   });
                 }
               }}
@@ -73,9 +79,19 @@ export function Topbar() {
           </div>
         </div>
 
-        <Button variant="ghost" size="sm" onClick={logout}>
-          Log out
-        </Button>
+        {/* Divider */}
+        <div className="w-px h-5 bg-neutral-200 mx-1 hidden sm:block" />
+
+        {/* Logout */}
+        <button
+          type="button"
+          onClick={logout}
+          title="Log out"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Log out</span>
+        </button>
       </div>
     </header>
   );
