@@ -23,16 +23,27 @@ interface AuthState {
   logout: () => void;
 }
 
+const MOCK_USER: AuthUser = {
+  id: "mock-admin-id",
+  email: "admin@ecosphere.com",
+  full_name: "EcoSphere Admin",
+  role: "admin",
+  department_id: "mock-dept-id",
+  xp_points: 1000,
+  total_points: 1000,
+  avatar_url: null,
+};
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      accessToken: null,
-      refreshToken: null,
-      user: null,
+      accessToken: "mock-dev-token",
+      refreshToken: "mock-dev-refresh-token",
+      user: MOCK_USER,
       setTokens: (accessToken, refreshToken) => set({ accessToken, refreshToken }),
       setUser: (user) => set({ user }),
-      logout: () => set({ accessToken: null, refreshToken: null, user: null }),
+      logout: () => set({ accessToken: "mock-dev-token", refreshToken: "mock-dev-refresh-token", user: MOCK_USER }),
     }),
-    { name: "ecosphere-auth" }
+    { name: "ecosphere-auth-mock" }
   )
 );

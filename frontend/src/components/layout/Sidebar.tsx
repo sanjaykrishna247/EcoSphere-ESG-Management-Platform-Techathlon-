@@ -3,12 +3,21 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { clsx } from "@/utils/clsx";
 import { useUiStore } from "@/store/uiStore";
+import {
+  Globe,
+  LayoutDashboard,
+  Leaf,
+  Users,
+  Scale,
+  Trophy,
+  Settings,
+} from "lucide-react";
 
 const navSections = [
   {
     key: "environmental",
     label: "Environmental",
-    icon: "🌿",
+    icon: Leaf,
     items: [
       { to: "/environmental/carbon", label: "Carbon Tracking" },
       { to: "/environmental/emission-factors", label: "Emission Factors" },
@@ -18,7 +27,7 @@ const navSections = [
   {
     key: "social",
     label: "Social",
-    icon: "🤝",
+    icon: Users,
     items: [
       { to: "/social/csr-activities", label: "CSR Activities" },
       { to: "/social/participation", label: "Participation" },
@@ -27,7 +36,7 @@ const navSections = [
   {
     key: "governance",
     label: "Governance",
-    icon: "📜",
+    icon: Scale,
     items: [
       { to: "/governance/policies", label: "Policies" },
       { to: "/governance/audits", label: "Audits" },
@@ -37,7 +46,7 @@ const navSections = [
   {
     key: "gamification",
     label: "Gamification",
-    icon: "🏅",
+    icon: Trophy,
     items: [
       { to: "/gamification/challenges", label: "Challenges" },
       { to: "/gamification/leaderboard", label: "Leaderboard" },
@@ -48,7 +57,7 @@ const navSections = [
   {
     key: "other",
     label: "More",
-    icon: "⚙️",
+    icon: Settings,
     items: [
       { to: "/reports", label: "Reports" },
       { to: "/ai-assistant", label: "ESG Assistant" },
@@ -94,7 +103,7 @@ export function Sidebar() {
         )}
       >
         <div className="px-5 py-5 flex items-center gap-2.5 border-b border-neutral-100">
-          <span className="text-2xl leading-none">🌍</span>
+          <Globe className="w-6 h-6 text-eco-green shrink-0" />
           <div>
             <p className="font-display font-bold text-lg leading-tight tracking-tight">EcoSphere</p>
             <p className="text-[11px] text-neutral-400 leading-tight">ESG Management</p>
@@ -114,7 +123,7 @@ export function Sidebar() {
               )
             }
           >
-            <span className="text-base leading-none">📊</span>
+            <LayoutDashboard className="w-5 h-5 shrink-0" />
             Dashboard
           </NavLink>
 
@@ -124,6 +133,7 @@ export function Sidebar() {
             {navSections.map((section) => {
               const isOpen = openKey === section.key;
               const isSectionActive = section.items.some((item) => location.pathname.startsWith(item.to));
+              const SectionIcon = section.icon;
 
               return (
                 <div key={section.key}>
@@ -135,7 +145,7 @@ export function Sidebar() {
                       isSectionActive ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50"
                     )}
                   >
-                    <span className="text-base leading-none">{section.icon}</span>
+                    <SectionIcon className="w-5 h-5 shrink-0 text-neutral-400" />
                     <span className="flex-1 text-left">{section.label}</span>
                     <svg
                       width="14"
@@ -168,10 +178,10 @@ export function Sidebar() {
                               to={item.to}
                               className={({ isActive }) =>
                                 clsx(
-                                  "relative flex items-center gap-2 rounded-lg pl-4 pr-3 py-2 text-sm font-medium transition-colors duration-150 border-l-2",
+                                  "relative flex items-center gap-2 rounded-lg pl-4 pr-3 py-2 text-sm font-medium transition-colors duration-150",
                                   isActive
-                                    ? "border-eco-green text-eco-green bg-eco-green/5"
-                                    : "border-transparent text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+                                    ? "text-eco-green bg-eco-green/5"
+                                    : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
                                 )
                               }
                             >

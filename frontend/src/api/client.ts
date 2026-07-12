@@ -33,7 +33,7 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    if (error.response?.status === 401 && !originalRequest._retry && useAuthStore.getState().refreshToken) {
+    if (error.response?.status === 401 && !originalRequest._retry && useAuthStore.getState().refreshToken && useAuthStore.getState().accessToken !== "mock-dev-token") {
       originalRequest._retry = true;
       try {
         refreshPromise = refreshPromise ?? refreshAccessToken();

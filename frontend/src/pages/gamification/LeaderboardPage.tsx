@@ -15,9 +15,9 @@ const PERIOD_TABS: { value: LeaderboardPeriod; label: string }[] = [
 ];
 
 const PODIUM_STYLES: Record<number, string> = {
-  1: "order-2 h-40 bg-gradient-to-b from-amber-warning/30 to-amber-warning/10 border-amber-warning",
-  2: "order-1 h-28 bg-gradient-to-b from-neutral-300/40 to-neutral-300/10 border-neutral-400",
-  3: "order-3 h-20 bg-gradient-to-b from-orange-500/25 to-orange-500/5 border-orange-500",
+  1: "order-2 h-40 bg-amber-50/50 dark:bg-amber-950/10 border-amber-400",
+  2: "order-1 h-28 bg-neutral-50 dark:bg-neutral-800/40 border-neutral-300 dark:border-neutral-700",
+  3: "order-3 h-20 bg-orange-50/30 dark:bg-orange-950/10 border-orange-300",
 };
 
 function initials(name: string): string {

@@ -4,6 +4,7 @@ import { useLogin } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
+import { Globe } from "lucide-react";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -25,7 +26,7 @@ export function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-950 px-4">
       <Card className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <span className="text-4xl">🌍</span>
+          <Globe className="w-10 h-10 text-eco-green mx-auto" />
           <h1 className="font-display font-bold text-xl mt-2">EcoSphere</h1>
           <p className="text-sm text-neutral-500">ESG Management Platform</p>
         </div>

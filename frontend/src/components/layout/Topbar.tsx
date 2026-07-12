@@ -4,6 +4,7 @@ import { useNotificationSocket } from "@/hooks/useNotificationSocket";
 import { useUnreadCount } from "@/api/notifications";
 import { useUiStore } from "@/store/uiStore";
 import { Button } from "@/components/ui/Button";
+import { Bell } from "lucide-react";
 
 export function Topbar() {
   const user = useAuthStore((s) => s.user);
@@ -33,7 +34,7 @@ export function Topbar() {
           className="relative w-9 h-9 flex items-center justify-center rounded-full text-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
           title="Notifications"
         >
-          🔔
+          <Bell className="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
           {!!unreadCount && unreadCount > 0 && (
             <span className="absolute top-1 right-1 bg-critical-red text-white text-[10px] font-semibold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
               {unreadCount}

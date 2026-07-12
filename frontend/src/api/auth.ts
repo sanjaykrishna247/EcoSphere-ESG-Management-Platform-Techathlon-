@@ -49,7 +49,7 @@ export function useCurrentUser() {
       setUser(res.data.data);
       return res.data.data;
     },
-    enabled: !!accessToken,
+    enabled: !!accessToken && accessToken !== "mock-dev-token",
     retry: false,
   });
 }

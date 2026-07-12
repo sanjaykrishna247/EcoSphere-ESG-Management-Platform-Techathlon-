@@ -2,6 +2,7 @@ import { TrendAreaChart } from "@/components/charts/TrendAreaChart";
 import { ScoreRing } from "@/components/charts/ScoreRing";
 import { Card } from "@/components/ui/Card";
 import { useOrgOverview, useEnvironmentalDashboard, useAverageDepartmentScores } from "@/api/dashboard";
+import { Wind, Trophy, Users, AlertTriangle } from "lucide-react";
 
 const kpiIconBg: Record<"green" | "teal" | "blue" | "purple", string> = {
   green: "bg-eco-green/10 text-eco-green",
@@ -18,12 +19,12 @@ function KpiCard({
 }: {
   label: string;
   value: string | number;
-  icon: string;
+  icon: React.ReactNode;
   accent: "green" | "teal" | "blue" | "purple";
 }) {
   return (
     <Card accent={accent} className="flex items-start gap-3">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 ${kpiIconBg[accent]}`}>
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${kpiIconBg[accent]}`}>
         {icon}
       </div>
       <div className="min-w-0">
@@ -59,12 +60,27 @@ export function DashboardPage() {
           <KpiCard
             label="Total CO2 (YTD)"
             value={overviewLoading ? "…" : `${(overview?.total_co2_ytd ?? 0).toFixed(1)} kg`}
-            icon="🌫️"
+            icon={<Wind className="w-5 h-5 text-earth-teal" />}
             accent="teal"
           />
-          <KpiCard label="Active Challenges" value={overview?.active_challenges ?? 0} icon="🏅" accent="purple" />
-          <KpiCard label="CSR Participants" value={overview?.csr_participants ?? 0} icon="🤝" accent="blue" />
-          <KpiCard label="Open Issues" value={overview?.open_compliance_issues ?? 0} icon="⚠️" accent="green" />
+          <KpiCard
+            label="Active Challenges"
+            value={overview?.active_challenges ?? 0}
+            icon={<Trophy className="w-5 h-5 text-governance-purple" />}
+            accent="purple"
+          />
+          <KpiCard
+            label="CSR Participants"
+            value={overview?.csr_participants ?? 0}
+            icon={<Users className="w-5 h-5 text-sky-blue" />}
+            accent="blue"
+          />
+          <KpiCard
+            label="Open Issues"
+            value={overview?.open_compliance_issues ?? 0}
+            icon={<AlertTriangle className="w-5 h-5 text-eco-green" />}
+            accent="green"
+          />
         </div>
       </div>
 
